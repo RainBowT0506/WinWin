@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
@@ -52,7 +53,7 @@ fun MyApp(viewModel: PatternViewModel) {
     val patterns by viewModel.patterns.observeAsState(emptyList())
     var selectedColor by remember { mutableStateOf<Long?>(null) }
 
-    Column {
+    Column(modifier = Modifier.padding(bottom = 50.dp)) {
         // Top section displaying the selected color
         Box(
             modifier = Modifier
@@ -62,16 +63,22 @@ fun MyApp(viewModel: PatternViewModel) {
         )
 
         // Bottom section with selectable colors
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
                 .background(Color.White)
-                .padding(start = 20.dp, top = 20.dp, end = 20.dp, bottom = 20.dp)
+                .padding(start = 20.dp, top = 20.dp, end = 20.dp)
         ) {
-            patterns.forEach { hueGroup ->
+            items(patterns.size) { hueIndex ->
+                val hueGroup = patterns[hueIndex]
+
                 Text(text = hueGroup.hue)
-                LazyRow {
+                LazyRow(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 16.dp)
+                ) {
                     items(hueGroup.patterns.size) { index ->
                         val pattern = hueGroup.patterns[index]
                         val backgroundColor = pattern.color.toInt()
