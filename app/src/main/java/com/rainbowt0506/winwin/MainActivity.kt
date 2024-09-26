@@ -8,9 +8,12 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -21,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.rainbowt0506.winwin.repository.PatternRepository
@@ -46,33 +50,47 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MyApp(viewModel: PatternViewModel) {
     val patterns by viewModel.patterns.observeAsState(emptyList())
-
     var selectedColor by remember { mutableStateOf<Long?>(null) }
 
     Column {
-        patterns.forEach { hueGroup ->
-            Text(text = hueGroup.hue)
-            LazyRow {
-                items(hueGroup.patterns.size) { index ->
-                    val pattern = hueGroup.patterns[index]
-                    val backgroundColor = pattern.color.toInt()
+        // Top section displaying the selected color
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .background(Color(selectedColor?.toInt() ?: Color.Gray.toArgb()))
+        )
 
-                    Box(
-                        modifier = Modifier
-                            .size(60.dp)
-                            .padding(8.dp)
-                            .background(Color(backgroundColor))
-                            .clickable {
-                                selectedColor = pattern.color
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(text = pattern.level.toString())
+        // Bottom section with selectable colors
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(1f)
+                .background(Color.White)
+                .padding(start = 20.dp, top = 20.dp, end = 20.dp, bottom = 20.dp)
+        ) {
+            patterns.forEach { hueGroup ->
+                Text(text = hueGroup.hue)
+                LazyRow {
+                    items(hueGroup.patterns.size) { index ->
+                        val pattern = hueGroup.patterns[index]
+                        val backgroundColor = pattern.color.toInt()
+
+                        Box(
+                            modifier = Modifier
+                                .size(60.dp)
+                                .padding(8.dp)
+                                .background(Color(backgroundColor), shape = CircleShape)
+                                .clickable {
+                                    selectedColor = pattern.color
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(text = pattern.level.toString())
+                        }
                     }
                 }
             }
         }
     }
-
-
 }
